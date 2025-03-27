@@ -1,0 +1,207 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+h1 {
+    margin-top: 20px;
+    font-size: 2rem;
+}
+
+p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.input-container {
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.input-container label {
+    margin-right: 10px;
+    font-size: 1rem;
+}
+
+.input-container .input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: white;
+    width: 100%;
+    max-width: 400px;
+    margin: 10px 0;
+}
+
+.input-container .input-wrapper span {
+    margin-right: 5px;
+    font-size: 1rem;
+}
+
+.input-container input {
+    border: none;
+    outline: none;
+    padding: 5px;
+    font-size: 1rem;
+    width: 100%;
+    text-align: left;
+}
+
+.comparison-section {
+    display: flex;
+    justify-content: center;
+    margin: 20px auto;
+    flex-wrap: wrap;
+}
+
+.state-box {
+    background-color: white;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 350px;
+    text-align: left;
+}
+
+.state-box h3 {
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.state-box label {
+    display: block;
+    margin: 10px 0 5px;
+    font-size: 0.9rem;
+}
+
+.state-box select {
+    width: 100%;
+    padding: 8px;
+    font-size: 1rem;
+}
+
+#compareButton {
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+}
+
+#compareButton:hover {
+    background-color: #0056b3;
+}
+
+.results {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.result {
+    font-size: 1rem;
+    margin-top: 10px;
+    text-align: left;
+}
+
+.summary p {
+    font-size: 0.9rem;
+    margin: 5px 0;
+}
+
+.global-summary {
+    margin-top: 20px;
+    background-color: #e9ecef;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: left;
+}
+
+.global-summary p {
+    font-size: 1rem;
+    margin: 10px 0;
+}
+
+.legend-box {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+.legend-box h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    text-align: center;
+    color: #333;
+}
+
+.legend-box ul {
+    list-style: none; /* Remove default bullets */
+    padding: 0;       /* Remove padding */
+    margin: 0;        /* Remove margin */
+}
+
+.legend-box li {
+    margin: 5px 0;    /* Add spacing between items */
+    padding-left: 0;  /* Ensure no left padding */
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    p {
+        font-size: 0.9rem;
+    }
+
+    .input-container label {
+        font-size: 0.9rem;
+    }
+
+    .input-container .input-wrapper {
+        max-width: 300px;
+    }
+
+    .state-box {
+        max-width: 100%;
+    }
+
+    #compareButton {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+
+    .global-summary {
+        padding: 15px;
+    }
+}

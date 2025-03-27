@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAX vs. TAX</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .input-container label {
+            margin-right: 10px;
+            font-size: 1em;
+        }
+
+        .input-container .input-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: white;
+        }
+
+        .input-container .input-wrapper span {
+            margin-right: 5px;
+            font-size: 1.2em;
+        }
+
+        .input-container input {
+            border: none;
+            outline: none;
+            padding: 5px;
+            font-size: 1em;
+            width: 300px;
+            text-align: left;
+        }
+
+        .comparison-section {
+            display: flex;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        .state-box {
+            background-color: white;
+            padding: 20px;
+            margin: 0 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: left;
+        }
+
+        .state-box h3 {
+            text-align: center;
+        }
+
+        .state-box label {
+            display: block;
+            margin: 10px 0 5px;
+            font-size: 0.9em;
+        }
+
+        .state-box select {
+            width: 100%;
+            padding: 8px;
+            font-size: 1em;
+        }
+
+        #compareButton {
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+        }
+
+        #compareButton:hover {
+            background-color: #0056b3;
+        }
+
+        .results {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .result {
+            font-size: 1.2em;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        .summary p {
+            font-size: 1em;
+            margin: 5px 0;
+        }
+
+        .global-summary {
+            margin-top: 20px;
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        .global-summary p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>TAX vs. TAX</h1>
+    <p>Tax year 2025</p>
+
+    <div class="input-container">
+        <label for="grossIncome">Enter Pre-Tax Gross Income:</label>
+        <div class="input-wrapper">
+            <span>$</span>
+            <input type="text" id="grossIncome" placeholder="e.g., 50,000">
+        </div>
+    </div>
+
+    <div class="comparison-section">
+        <div class="state-box">
+            <h3>State #1</h3>
+            <label for="filingStatus1">Filing Status:</label>
+            <select id="filingStatus1">
+                <option value="single">Single</option>
+                <option value="married_jointly">Married Filing Jointly</option>
+                <option value="married_separately">Married Filing Separately</option>
+                <option value="head">Head of Household</option>
+            </select>
+
+            <label for="state1">State:</label>
+            <select id="state1">
+                <option value="">Select a State</option>
+            </select>
+
+            <div class="result" id="result1">Post-Tax Income: $0.00</div>
+            <p id="federalTaxes1">Federal Income Taxes: $0.00</p>
+            <p id="stateTaxes1">State Income Taxes: $0.00</p>
+            <p id="effectiveTaxRate1">Effective Tax Rate: 0.00%</p>
+        </div>
+
+        <div class="state-box">
+            <h3>State #2</h3>
+            <label for="filingStatus2">Filing Status:</label>
+            <select id="filingStatus2">
+                <option value="single">Single</option>
+                <option value="married_jointly">Married Filing Jointly</option>
+                <option value="married_separately">Married Filing Separately</option>
+                <option value="head">Head of Household</option>
+            </select>
+
+            <label for="state2">State:</label>
+            <select id="state2">
+                <option value="">Select a State</option>
+            </select>
+
+            <div class="result" id="result2">Post-Tax Income: $0.00</div>
+            <p id="federalTaxes2">Federal Income Taxes: $0.00</p>
+            <p id="stateTaxes2">State Income Taxes: $0.00</p>
+            <p id="effectiveTaxRate2">Effective Tax Rate: 0.00%</p>
+        </div>
+    </div>
+
+    <button id="compareButton">Compare</button>
+
+    <div class="global-summary" id="globalSummary">
+        <p id="annualDifference">In State X, you would have $0.00 more per year.</p>
+        <p id="monthlyDifference">That means, in State X, you would have $0.00 more per month.</p>
+    </div>
+
+    <script>
+        const taxData = {
+    federal: {
+        single: [
+            { rate: 0.1, range: [0, 11925] },
+            { rate: 0.12, range: [11926, 48475] },
+            { rate: 0.22, range: [48476, 103350] },
+            { rate: 0.24, range: [103351, 197300] },
+            { rate: 0.32, range: [197301, 250525] },
+            { rate: 0.35, range: [250526, 626350] },
+            { rate: 0.37, range: [626351, null] },
+        ],
+        married_jointly: [
+            { rate: 0.1, range: [0, 23850] },
+            { rate: 0.12, range: [23851, 96950] },
+            { rate: 0.22, range: [96951, 206700] },
+            { rate: 0.24, range: [206701, 394600] },
+            { rate: 0.32, range: [394601, 501050] },
+            { rate: 0.35, range: [501051, 751600] },
+            { rate: 0.37, range: [751601, null] },
+        ],
+        married_separately: [
+            { rate: 0.1, range: [0, 11925] },
+            { rate: 0.12, range: [11926, 48475] },
+            { rate: 0.22, range: [48476, 103350] },
+            { rate: 0.24, range: [103351, 197300] },
+            { rate: 0.32, range: [197301, 250525] },
+            { rate: 0.35, range: [250526, 626350] },
+            { rate: 0.37, range: [626351, null] },
+        ],
+        head: [
+            { rate: 0.1, range: [0, 17000] },
+            { rate: 0.12, range: [17001, 64850] },
+            { rate: 0.22, range: [64851, 103350] },
+            { rate: 0.24, range: [103351, 197300] },
+            { rate: 0.32, range: [197301, 250500] },
+            { rate: 0.35, range: [250501, 626350] },
+            { rate: 0.37, range: [626351, null] },
+        ],
+    },
+    states: {
+        Alabama: {
+            single: [
+                { rate: 0.02, range: [0, 500] },
+                { rate: 0.04, range: [501, 3000] },
+                { rate: 0.05, range: [3001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.02, range: [0, 1000] },
+                { rate: 0.04, range: [1001, 6000] },
+                { rate: 0.05, range: [6001, null] },
+            ],
+            married_separately: [
+                { rate: 0.02, range: [0, 500] },
+                { rate: 0.04, range: [501, 3000] },
+                { rate: 0.05, range: [3001, null] },
+            ],
+            head: [
+                { rate: 0.02, range: [0, 500] },
+                { rate: 0.04, range: [501, 3000] },
+                { rate: 0.05, range: [3001, null] },
+            ],
+        },
+        Alaska: {
+            single: [],
+            married_jointly: [],
+            married_separately: [],
+            head: [],
+        },
+        Arizona: {
+            single: [
+                { rate: 0.025, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.025, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.025, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.025, range: [0, null] },
+            ],
+        },
+        Arkansas: {
+            conditionalBrackets: [
+                {
+                    incomeThreshold: 89600, // Group 1: Income <= $89,600
+                    brackets: [
+                        { rate: 0.0, range: [0, 5299] },
+                        { rate: 0.02, range: [5300, 10599] },
+                        { rate: 0.03, range: [10600, 15099] },
+                        { rate: 0.034, range: [15100, 24299] },
+                        { rate: 0.039, range: [24300, 89600] },
+                    ],
+                },
+                {
+                    incomeThreshold: Infinity, // Group 2: Income > $89,600
+                    brackets: [
+                        { rate: 0.02, range: [0, 4500] },
+                        { rate: 0.039, range: [4501, null] },
+                    ],
+                },
+            ],
+        },
+        Colorado: {
+            single: [
+                { rate: 0.044, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.044, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.044, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.044, range: [0, null] },
+            ],
+        },
+        California: {
+            single: [
+                { rate: 0.01, range: [0, 10756] },
+                { rate: 0.02, range: [10757, 25499] },
+                { rate: 0.04, range: [25500, 40245] },
+                { rate: 0.06, range: [40246, 55866] },
+                { rate: 0.08, range: [55867, 70606] },
+                { rate: 0.093, range: [70607, 360659] },
+                { rate: 0.103, range: [360660, 432787] },
+                { rate: 0.113, range: [432788, 721314] },
+                { rate: 0.123, range: [721315, null] },
+            ],
+            married_jointly: [
+                { rate: 0.01, range: [0, 10756] },
+                { rate: 0.02, range: [10757, 25499] },
+                { rate: 0.04, range: [25500, 40245] },
+                { rate: 0.06, range: [40246, 55866] },
+                { rate: 0.08, range: [55867, 70606] },
+                { rate: 0.093, range: [70607, 360659] },
+                { rate: 0.103, range: [360660, 432787] },
+                { rate: 0.113, range: [432788, 721314] },
+                { rate: 0.123, range: [721315, null] },
+            ],
+            married_separately: [
+                { rate: 0.01, range: [0, 10756] },
+                { rate: 0.02, range: [10757, 25499] },
+                { rate: 0.04, range: [25500, 40245] },
+                { rate: 0.06, range: [40246, 55866] },
+                { rate: 0.08, range: [55867, 70606] },
+                { rate: 0.093, range: [70607, 360659] },
+                { rate: 0.103, range: [360660, 432787] },
+                { rate: 0.113, range: [432788, 721314] },
+                { rate: 0.123, range: [721315, null] },
+            ],
+            head: [
+                { rate: 0.01, range: [0, 10756] },
+                { rate: 0.02, range: [10757, 25499] },
+                { rate: 0.04, range: [25500, 40245] },
+                { rate: 0.06, range: [40246, 55866] },
+                { rate: 0.08, range: [55867, 70606] },
+                { rate: 0.093, range: [70607, 360659] },
+                { rate: 0.103, range: [360660, 432787] },
+                { rate: 0.113, range: [432788, 721314] },
+                { rate: 0.123, range: [721315, null] },
+            ],
+        },
+        Connecticut: {
+            single: [
+                { rate: 0.02, range: [0, 10000] },
+                { rate: 0.045, range: [10001, 50000] },
+                { rate: 0.055, range: [50001, 100000] },
+                { rate: 0.06, range: [100001, 200000] },
+                { rate: 0.065, range: [200001, 250000] },
+                { rate: 0.069, range: [250001, 500000] },
+                { rate: 0.0699, range: [500001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.01, range: [0, 10756] },
+                { rate: 0.02, range: [10757, 25499] },
+                { rate: 0.04, range: [25500, 40245] },
+                { rate: 0.06, range: [40246, 55866] },
+                { rate: 0.08, range: [55867, 70606] },
+                { rate: 0.093, range: [70607, 360659] },
+                { rate: 0.103, range: [360660, 432787] },
+                { rate: 0.113, range: [432788, 721314] },
+                { rate: 0.123, range: [721315, null] },
+            ],
+            married_separately: [
+                { rate: 0.02, range: [0, 10000] },
+                { rate: 0.045, range: [10001, 50000] },
+                { rate: 0.055, range: [50001, 100000] },
+                { rate: 0.06, range: [100001, 200000] },
+                { rate: 0.065, range: [200001, 250000] },
+                { rate: 0.069, range: [250001, 500000] },
+                { rate: 0.0699, range: [500001, null] },
+            ],
+            head: [
+                { rate: 0.01, range: [0, 10756] },
+                { rate: 0.02, range: [10757, 25499] },
+                { rate: 0.04, range: [25500, 40245] },
+                { rate: 0.06, range: [40246, 55866] },
+                { rate: 0.08, range: [55867, 70606] },
+                { rate: 0.093, range: [70607, 360659] },
+                { rate: 0.103, range: [360660, 432787] },
+                { rate: 0.113, range: [432788, 721314] },
+                { rate: 0.123, range: [721315, null] },
+            ],
+        },
+        Delaware: {
+            single: [
+                { rate: 0.00, range: [0, 2000] },
+                { rate: 0.022, range: [2001 , 5000] },
+                { rate: 0.039, range: [5001, 10001] },
+                { rate: 0.048, range: [10001, 20000] },
+                { rate: 0.052, range: [20001, 25000] },
+                { rate: 0.0555, range: [25001, 60000] },
+                { rate: 0.0595, range: [60001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.00, range: [0, 2000] },
+                { rate: 0.022, range: [2001 , 5000] },
+                { rate: 0.039, range: [5001, 10001] },
+                { rate: 0.048, range: [10001, 20000] },
+                { rate: 0.052, range: [20001, 25000] },
+                { rate: 0.0555, range: [25001, 60000] },
+                { rate: 0.0595, range: [60001, null] },
+            ],
+            married_separately: [
+                { rate: 0.00, range: [0, 2000] },
+                { rate: 0.022, range: [2001 , 5000] },
+                { rate: 0.039, range: [5001, 10001] },
+                { rate: 0.048, range: [10001, 20000] },
+                { rate: 0.052, range: [20001, 25000] },
+                { rate: 0.0555, range: [25001, 60000] },
+                { rate: 0.0595, range: [60001, null] },
+            ],
+            head: [
+                { rate: 0.00, range: [0, 2000] },
+                { rate: 0.022, range: [2001 , 5000] },
+                { rate: 0.039, range: [5001, 10001] },
+                { rate: 0.048, range: [10001, 20000] },
+                { rate: 0.052, range: [20001, 25000] },
+                { rate: 0.0555, range: [25001, 60000] },
+                { rate: 0.0595, range: [60001, null] },
+            ],
+        },
+        Florida: {
+            single: [],
+            married_jointly: [],
+            married_separately: [],
+            head: [],
+        },
+        Georgia: {
+            single: [
+                { rate: 0.01, fixedAmount: 0, range: [0, 750] },
+                { rate: 0.02, fixedAmount: 8, range: [751, 2250] },
+                { rate: 0.03, fixedAmount: 38, range: [2251, 3750] },
+                { rate: 0.04, fixedAmount: 83, range: [3751, 5250] },
+                { rate: 0.05, fixedAmount: 143, range: [5251, 7000] },
+                { rate: 0.0575, fixedAmount: 230, range: [7001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.01, fixedAmount: 0, range: [0, 750] },
+                { rate: 0.02, fixedAmount: 8, range: [751, 2250] },
+                { rate: 0.03, fixedAmount: 38, range: [2251, 3750] },
+                { rate: 0.04, fixedAmount: 83, range: [3751, 5250] },
+                { rate: 0.05, fixedAmount: 143, range: [5251, 7000] },
+                { rate: 0.0575, fixedAmount: 230, range: [7001, null] },
+            ],
+        },
+        Hawaii: {
+            single: [
+                { rate: 0.014, range: [0, 2400] },
+                { rate: 0.032, range: [2401, 4800] },
+                { rate: 0.055, range: [4801 , 9600] },
+                { rate: 0.064, range: [9601, 14400] },
+                { rate: 0.068, range: [14401, 19200] },
+                { rate: 0.072, range: [19201, 24000] },
+                { rate: 0.076, range: [24001, 36000] },
+                { rate: 0.079, range: [36001, 48000] },
+                { rate: 0.0825, range: [48001, 150000] },
+                { rate: 0.09, range: [150001, 175000] },
+                { rate: 0.10, range: [175001, 200000] },
+                { rate: 0.11, range: [200001, null] },
+            ],
+            married_jointly: [
+            { rate: 0.014, range: [0, 2400] },
+                { rate: 0.032, range: [2401, 4800] },
+                { rate: 0.055, range: [4801 , 9600] },
+                { rate: 0.064, range: [9601, 14400] },
+                { rate: 0.068, range: [14401, 19200] },
+                { rate: 0.072, range: [19201, 24000] },
+                { rate: 0.076, range: [24001, 36000] },
+                { rate: 0.079, range: [36001, 48000] },
+                { rate: 0.0825, range: [48001, 150000] },
+                { rate: 0.09, range: [150001, 175000] },
+                { rate: 0.10, range: [175001, 200000] },
+                { rate: 0.11, range: [200001, null] },
+            ],
+            married_separately: [
+            { rate: 0.014, range: [0, 2400] },
+                { rate: 0.032, range: [2401, 4800] },
+                { rate: 0.055, range: [4801 , 9600] },
+                { rate: 0.064, range: [9601, 14400] },
+                { rate: 0.068, range: [14401, 19200] },
+                { rate: 0.072, range: [19201, 24000] },
+                { rate: 0.076, range: [24001, 36000] },
+                { rate: 0.079, range: [36001, 48000] },
+                { rate: 0.0825, range: [48001, 150000] },
+                { rate: 0.09, range: [150001, 175000] },
+                { rate: 0.10, range: [175001, 200000] },
+                { rate: 0.11, range: [200001, null] },
+            ],
+            head: [
+            { rate: 0.014, range: [0, 2400] },
+                { rate: 0.032, range: [2401, 4800] },
+                { rate: 0.055, range: [4801 , 9600] },
+                { rate: 0.064, range: [9601, 14400] },
+                { rate: 0.068, range: [14401, 19200] },
+                { rate: 0.072, range: [19201, 24000] },
+                { rate: 0.076, range: [24001, 36000] },
+                { rate: 0.079, range: [36001, 48000] },
+                { rate: 0.0825, range: [48001, 150000] },
+                { rate: 0.09, range: [150001, 175000] },
+                { rate: 0.10, range: [175001, 200000] },
+                { rate: 0.11, range: [200001, null] },
+            ],
+        },
+        Idaho: {
+            single: [
+                { rate: 0.058, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.058, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.058, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.058, range: [0, null] },
+            ],
+        },
+        Illinois: {
+            single: [
+                { rate: 0.0495, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0495, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.0495, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.0495, range: [0, null] },
+            ],
+        },
+        Indiana: {
+            single: [
+                { rate: 0.0305, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0305, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.0305, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.0305, range: [0, null] },
+            ],
+        },
+        Iowa: {
+            single: [
+                { rate: 0.038, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.038, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.038, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.038, range: [0, null] },
+            ],
+        },
+        Kansas: {
+            single: [
+                { rate: 0.052, range: [0, 23000] },
+                { rate: 0.0558, range: [23001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.052, range: [0, 46000] },
+                { rate: 0.058, range: [46001, null] },
+            ],
+            married_separately: [
+                { rate: 0.052, range: [0, 23000] },
+                { rate: 0.0558, range: [23001, null] },
+            ],
+            head: [
+                { rate: 0.052, range: [0, 23000] },
+                { rate: 0.0558, range: [23001, null] },
+            ],
+        },
+        Kentucky: {
+            single: [
+                { rate: 0.04, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.04, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.04, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.04, range: [0, null] },
+            ],
+        },
+        Louisiana: {
+            single: [
+                { rate: 0.0309, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0309, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.0309, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.0309, range: [0, null] },
+            ],
+        },
+        Maine: {
+            single: [
+                { rate: 0.058, fixedAmount: 0, range: [0, 26799] },
+                { rate: 0.0675, fixedAmount: 1554, range: [26800, 63449] },
+                { rate: 0.0715, fixedAmount: 4028, range: [63450, null] },
+            ],
+            married_jointly: [
+                { rate: 0.058, fixedAmount: 0, range: [0, 53599] },
+                { rate: 0.0675, fixedAmount: 3109, range: [53600, 126899] },
+                { rate: 0.0715, fixedAmount: 8057, range: [126900, null] },
+            ],
+            married_separately: [
+                { rate: 0.058, fixedAmount: 0, range: [0, 26799] },
+                { rate: 0.0675, fixedAmount: 1554, range: [26800, 63449] },
+                { rate: 0.0715, fixedAmount: 4028, range: [63450, null] },
+            ],
+            head: [
+                { rate: 0.058, fixedAmount: 0, range: [0, 40199] },
+                { rate: 0.0675, fixedAmount: 2332, range: [40200, 95149] },
+                { rate: 0.0715, fixedAmount: 6041, range: [95150, null] },
+            ],
+        },
+        Maryland: {
+            single: [
+                { rate: 0.02, fixedAmount: 0, range: [0, 1000] },
+                { rate: 0.03, fixedAmount: 20, range: [1001, 2000] },
+                { rate: 0.04, fixedAmount: 50, range: [2001, 3000] },
+                { rate: 0.0475, fixedAmount: 90, range: [3001, 100000] },
+                { rate: 0.05, fixedAmount: 4697.5, range: [100001, 125000] },
+                { rate: 0.0525, fixedAmount: 5947.5, range: [125001, 150000] },
+                { rate: 0.055, fixedAmount: 7260, range: [150001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.02, fixedAmount: 0, range: [0, 1000] },
+                { rate: 0.03, fixedAmount: 20, range: [1001, 3000] },
+                { rate: 0.04, fixedAmount: 50, range: [3001, 150000] },
+                { rate: 0.0475, fixedAmount: 90, range: [150001, 175000] },
+                { rate: 0.05, fixedAmount: 7072.5, range: [175001, 225000] },
+                { rate: 0.0525, fixedAmount: 8322.5, range: [225001, 300000] },
+                { rate: 0.055, fixedAmount: 7260, range: [300001, null] },
+            ],
+            married_separately: [
+                { rate: 0.02, fixedAmount: 0, range: [0, 1000] },
+                { rate: 0.03, fixedAmount: 20, range: [1001, 2000] },
+                { rate: 0.04, fixedAmount: 50, range: [2001, 3000] },
+                { rate: 0.0475, fixedAmount: 90, range: [3001, 100000] },
+                { rate: 0.05, fixedAmount: 4697.5, range: [100001, 125000] },
+                { rate: 0.0525, fixedAmount: 5947.5, range: [125001, 150000] },
+                { rate: 0.055, fixedAmount: 7260, range: [150001, null] },
+            ],
+            head: [
+                { rate: 0.02, fixedAmount: 0, range: [0, 1000] },
+                { rate: 0.03, fixedAmount: 20, range: [1001, 2000] },
+                { rate: 0.04, fixedAmount: 50, range: [2001, 3000] },
+                { rate: 0.0475, fixedAmount: 90, range: [3001, 100000] },
+                { rate: 0.05, fixedAmount: 4697.5, range: [100001, 125000] },
+                { rate: 0.0525, fixedAmount: 5947.5, range: [125001, 150000] },
+                { rate: 0.055, fixedAmount: 7260, range: [150001, null] },
+        ]
+        },
+        Massachusetts: {
+            single: [
+                { rate: 0.05, range: [0, 1000000] },
+                { rate: 0.09, range: [1000001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.05, range: [0, 1000000] },
+                { rate: 0.09, range: [1000001, null] },
+            ],
+            married_separately: [
+                { rate: 0.05, range: [0, 1000000] },
+                { rate: 0.09, range: [1000001, null] },
+            ],
+            head: [
+                { rate: 0.05, range: [0, 1000000] },
+                { rate: 0.09, range: [1000001, null] },
+            ],
+        },
+        Michigan: {
+            single: [
+                { rate: 0.0425, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0425, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.0425, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.0425, range: [0, null] },
+            ],
+        },
+        Minnesota: {
+            single: [
+                { rate: 0.0535, range: [0, 32570] },
+                { rate: 0.068, range: [32571, 106990] },
+                { rate: 0.0785, range: [106991, 198630]},
+                { rate: 0.0985, range: [198631, null]},
+            ],
+            married_jointly: [
+                { rate: 0.0535, range: [0, 47620] },
+                { rate: 0.068, range: [47621, 189180] },
+                { rate: 0.0785, range: [189181, 330410]},
+                { rate: 0.0985, range: [330411, null]},
+            ],
+            married_separately: [
+                { rate: 0.0535, range: [0, 23810] },
+                { rate: 0.068, range: [23811, 94590] },
+                { rate: 0.0785, range: [94591, 165205]},
+                { rate: 0.0985, range: [165206, null]},
+            ],
+            head: [
+                { rate: 0.0535, range: [0, 40100] },
+                { rate: 0.068, range: [40101, 161130] },
+                { rate: 0.0785, range: [161131, 264050]},
+                { rate: 0.0985, range: [264051, null]},
+            ],
+        },
+        Mississippi: {
+            single: [
+                { rate: 0.0, range: [0, 10000] },
+                { rate: 0.044, range: [10001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0, range: [0, 10000] },
+                { rate: 0.044, range: [10001, null] },
+            ],
+            married_separately: [
+                { rate: 0.0, range: [0, 10000] },
+                { rate: 0.044, range: [10001, null] },
+            ],
+            head: [
+                { rate: 0.0, range: [0, 10000] },
+                { rate: 0.044, range: [10001, null] },
+            ],
+        },
+        Missouri: {
+            single: [
+                { rate: 0.0, range: [0, 1273] },
+                { rate: 0.02, range: [1274.01, 2546] },
+                { rate: 0.025, range: [2546.01, 3819] },
+                { rate: 0.03, range: [3819.01, 5092] },
+                { rate: 0.035, range: [5092.01, 6365] },
+                { rate: 0.094, range: [6365.01, 7638] },
+                { rate: 0.045, range: [7638.01, 8911] },
+                { rate: 0.048, range: [8911.01, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0, range: [0, 1273] },
+                { rate: 0.02, range: [1274.01, 2546] },
+                { rate: 0.025, range: [2546.01, 3819] },
+                { rate: 0.03, range: [3819.01, 5092] },
+                { rate: 0.035, range: [5092.01, 6365] },
+                { rate: 0.094, range: [6365.01, 7638] },
+                { rate: 0.045, range: [7638.01, 8911] },
+                { rate: 0.048, range: [8911.01, null] },
+            ],
+            married_separately: [
+                { rate: 0.0, range: [0, 1273] },
+                { rate: 0.02, range: [1274.01, 2546] },
+                { rate: 0.025, range: [2546.01, 3819] },
+                { rate: 0.03, range: [3819.01, 5092] },
+                { rate: 0.035, range: [5092.01, 6365] },
+                { rate: 0.094, range: [6365.01, 7638] },
+                { rate: 0.045, range: [7638.01, 8911] },
+                { rate: 0.048, range: [8911.01, null] },
+            ],
+            head: [
+                { rate: 0.0, range: [0, 1273] },
+                { rate: 0.02, range: [1274.01, 2546] },
+                { rate: 0.025, range: [2546.01, 3819] },
+                { rate: 0.03, range: [3819.01, 5092] },
+                { rate: 0.035, range: [5092.01, 6365] },
+                { rate: 0.094, range: [6365.01, 7638] },
+                { rate: 0.045, range: [7638.01, 8911] },
+                { rate: 0.048, range: [8911.01, null] },
+            ],
+        },
+        Montana: {
+            single: [
+                { rate: 0.047, range: [0, 21100] },
+                { rate: 0.059, range: [21101, null] },
+            ],
+            married_jointly: [
+                { rate: 0.047, range: [0, 42200] },
+                { rate: 0.059, range: [42201, null] },
+            ],
+            married_separately: [
+                { rate: 0.047, range: [0, 21100] },
+                { rate: 0.059, range: [21101, null] },
+            ],
+            head: [
+                { rate: 0.047, range: [0, 31700] },
+                { rate: 0.059, range: [31701, null] },
+            ],
+        },
+        Nebraska: {
+            single: [
+                { rate: 0.0246, range: [0, 2999] },
+                { rate: 0.0351, range: [3000, 17999] },
+                { rate: 0.0501, range: [18000, 28999] }, 
+                { rate: 0.0520, range: [29000, null]},
+            ],
+            married_jointly: [
+                { rate: 0.0246, range: [0, 5999] },
+                { rate: 0.0351, range: [6000, 35999] },
+                { rate: 0.0501, range: [36000, 57999] }, 
+                { rate: 0.0520, range: [58000, null]},
+            ],
+            married_separately: [
+                { rate: 0.0246, range: [0, 2999] },
+                { rate: 0.0351, range: [3000, 28799] },
+                { rate: 0.0501, range: [28800, 42999] }, 
+                { rate: 0.0520, range: [43000, null]},
+            ],
+            head: [
+                { rate: 0.0246, range: [0, 5599] },
+                { rate: 0.0351, range: [5600, 17999] },
+                { rate: 0.0501, range: [18000, 28999] }, 
+                { rate: 0.0520, range: [29000, null]},
+            ],
+        Nevada: {
+            single: [],
+            married_jointly: [],
+            married_separately: [],
+            head: [],
+        },
+        "New Hampshire": {
+            single: [],
+            married_jointly: [],
+            married_separately: [],
+            head: [],
+        },
+        "New Jersey": {
+            single: [
+                { rate: 0.014, range: [0, 20000] },
+                { rate: 0.0175, range: [20001, 35000] },
+                { rate: 0.035, range: [35001, 40000] },
+                { rate: 0.05525, range: [40001, 75000]},
+                { rate: 0.0637, range: [75001, 500000]},
+                { rate: 0.0897, range: [500001, 1000000]},
+                { rate: 0.1075, range: [1000001, null]},
+            ],
+            married_jointly: [
+                { rate: 0.014, range: [0, 20000] },
+                { rate: 0.0175, range: [20001, 50000] },
+                { rate: 0.0245, range: [50001, 70000] },
+                { rate: 0.035, range: [70001, 80000]},
+                { rate: 0.05525, range: [80001, 150000]},
+                { rate: 0.0637, range: [150001, 500000]},
+                { rate: 0.0897, range: [500001, 1000000]},
+                { rate: 0.1075, range: [1000001, null]},
+            ],
+            married_separately: [
+                { rate: 0.014, range: [0, 20000] },
+                { rate: 0.0175, range: [20001, 35000] },
+                { rate: 0.035, range: [35001, 40000] },
+                { rate: 0.05525, range: [40001, 75000]},
+                { rate: 0.0637, range: [75001, 500000]},
+                { rate: 0.0897, range: [500001, 1000000]},
+                { rate: 0.1075, range: [1000001, null]},
+            ],
+            head: [
+                { rate: 0.014, range: [0, 20000] },
+                { rate: 0.0175, range: [20001, 50000] },
+                { rate: 0.0245, range: [50001, 70000] },
+                { rate: 0.035, range: [70001, 80000]},
+                { rate: 0.05525, range: [80001, 150000]},
+                { rate: 0.0637, range: [150001, 500000]},
+                { rate: 0.0897, range: [500001, 1000000]},
+                { rate: 0.1075, range: [1000001, null]},
+            ],
+        },
+        "New Mexico": {
+            single: [
+                { rate: 0.015, fixedAmount: 0, range: [0, 5500] },
+                { rate: 0.032, fixedAmount: 82.5, range: [5501, 16500] },
+                { rate: 0.043, fixedAmount: 434.5, range: [16501, 33500] },
+                { rate: 0.047, fixedAmount: 1165.5, range: [33501, 66500] },
+                { rate: 0.049, fixedAmount: 2716.5, range: [66501, 210000] },
+                { rate: 0.059, fixedAmount: 9748, range: [210001, null] },
+            ],
+            married_jointly: [
+            {    rate: 0.015, fixedAmount: 0, range: [0, 8000] },
+                { rate: 0.032, fixedAmount: 120, range: [8001, 25000] },
+                { rate: 0.043, fixedAmount: 664, range: [25001, 50000] },
+                { rate: 0.047, fixedAmount: 1739, range: [50001, 100000] },
+                { rate: 0.049, fixedAmount: 4089, range: [100001, 315000] },
+                { rate: 0.059, fixedAmount: 14624, range: [315001, null] },
+            ],
+            married_separately: [
+                { rate: 0.015, fixedAmount: 0, range: [0, 5500] },
+                { rate: 0.032, fixedAmount: 82.5, range: [5501, 16500] },
+                { rate: 0.043, fixedAmount: 434.5, range: [16501, 33500] },
+                { rate: 0.047, fixedAmount: 1165.5, range: [33501, 66500] },
+                { rate: 0.049, fixedAmount: 2716.5, range: [66501, 210000] },
+                { rate: 0.059, fixedAmount: 9748, range: [210001, null] },
+            ],
+            head: [
+                { rate: 0.015, fixedAmount: 0, range: [0, 4000] },
+                { rate: 0.032, fixedAmount: 660, range: [4001, 12500] },
+                { rate: 0.043, fixedAmount: 332, range: [12501, 25000] },
+                { rate: 0.047, fixedAmount: 869.5, range: [25001, 50000] },
+                { rate: 0.049, fixedAmount: 2044.5, range: [50001, 157500] },
+                { rate: 0.059, fixedAmount: 7312, range: [157501, null] },
+            ]
+        },
+        "New York": {
+            single: [
+                { rate: 0.04, range: [0, 8500] },
+                { rate: 0.045, fixedAmount: 340, range: [8501, 11700] },
+                { rate: 0.0525, fixedAmount: 484, range: [11701, 13900] },
+                { rate: 0.055, fixedAmount: 600, range: [13901, 80650] },
+                { rate: 0.06, fixedAmount: 4271, range: [80651, 215400] },
+                { rate: 0.0685, fixedAmount: 12356, range: [215401, 1077550] },
+                { rate: 0.0965, fixedAmount: 71413, range: [1077551, 5000000] },
+                { rate: 0.103, fixedAmount: 449929, range: [5000001, 25000000] },
+                { rate: 0.109, fixedAmount: 2509929, range: [25000001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.04, range: [0, 17150] },
+                { rate: 0.045, fixedAmount: 686, range: [17151, 23600] },
+                { rate: 0.0525, fixedAmount: 976, range: [23601, 27900] },
+                { rate: 0.055, fixedAmount: 1202, range: [27901, 161550] },
+                { rate: 0.06, fixedAmount: 8553, range: [161550, 323200] },
+                { rate: 0.0685, fixedAmount: 18252, range: [323201, 2155350] },
+                { rate: 0.0965, fixedAmount: 143754, range: [2155351, 5000000] },
+                { rate: 0.103, fixedAmount: 418263, range: [5000001, 25000000] },
+                { rate: 0.109, fixedAmount: 2478263, range: [25000001, null] },
+            ],
+            married_separately: [
+                { rate: 0.04, range: [0, 8500] },
+                { rate: 0.045, fixedAmount: 340, range: [8501, 11700] },
+                { rate: 0.0525, fixedAmount: 484, range: [11701, 13900] },
+                { rate: 0.055, fixedAmount: 600, range: [13901, 80650] },
+                { rate: 0.06, fixedAmount: 4271, range: [80651, 215400] },
+                { rate: 0.0685, fixedAmount: 12356, range: [215401, 1077550] },
+                { rate: 0.0965, fixedAmount: 71413, range: [1077551, 5000000] },
+                { rate: 0.103, fixedAmount: 449929, range: [5000001, 25000000] },
+                { rate: 0.109, fixedAmount: 2509929, range: [25000001, null] },
+            ],
+            head: [
+                { rate: 0.04, range: [0, 12800] },
+                { rate: 0.045, fixedAmount: 512, range: [12801, 17650] },
+                { rate: 0.0525, fixedAmount: 730, range: [17651, 20900] },
+                { rate: 0.055, fixedAmount: 901, range: [20901, 107650] },
+                { rate: 0.06, fixedAmount: 5672, range: [107651, 269300] },
+                { rate: 0.0685, fixedAmount: 15371, range: [269301, 1616450] },
+                { rate: 0.0965, fixedAmount: 107651, range: [1616451, 5000000] },
+                { rate: 0.103, fixedAmount: 434163, range: [5000001, 25000000] },
+                { rate: 0.109, fixedAmount: 2494163, range: [25000001, null] },
+            ]
+        },
+        "North Carolina": {
+            single: [
+                { rate: 0.045, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.045, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.045, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.045, range: [0, null] },
+            ],
+        },
+        "North Dakota": {
+            single: [
+                { rate: 0.0, range: [0, 44725] },
+                { rate: 0.0195, fixedAmount: 0, range: [44726, 225975] },
+                { rate: 0.025, fixedAmount: 3534.38, range: [225976, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0, range: [0, 74750] },
+                { rate: 0.0195, fixedAmount: 0, range: [74751, 275100] },
+                { rate: 0.025, fixedAmount: 3906.83, range: [275101, null] },
+            ],
+            married_separately: [
+                { rate: 0.0, range: [0, 37375] },
+                { rate: 0.0195, fixedAmount: 0, range: [37376, 137550] },
+                { rate: 0.025, fixedAmount: 1953.41, range: [137551, null] },
+            ],
+            head: [
+                { rate: 0.0, range: [0, 59950] },
+                { rate: 0.0195, fixedAmount: 0, range: [59951, 250550] },
+                { rate: 0.025, fixedAmount: 3716.70, range: [250551, null] },
+            ]
+        },
+        "Ohio": {
+            single: [
+                { rate: 0.0, range: [0, 26050] },
+                { rate: 0.0195, fixedAmount: 360.69, range: [26051, 100000] },
+                { rate: 0.025, fixedAmount: 2394.32, range: [100001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0, range: [0, 26050] },
+                { rate: 0.0195, fixedAmount: 360.69, range: [26051, 100000] },
+                { rate: 0.025, fixedAmount: 2394.32, range: [100001, null] },
+            ],
+            married_separately: [
+                { rate: 0.0, range: [0, 26050] },
+                { rate: 0.0195, fixedAmount: 360.69, range: [26051, 100000] },
+                { rate: 0.025, fixedAmount: 2394.32, range: [100001, null] },
+            ],
+            head: [
+                { rate: 0.0, range: [0, 26050] },
+                { rate: 0.0195, fixedAmount: 360.69, range: [26051, 100000] },
+                { rate: 0.025, fixedAmount: 2394.32, range: [100001, null] },
+            ]
+        },
+        "Oklahoma": {
+            single: [
+                { rate: 0.0, range: [0, 6350] },
+                { rate: 0.0025, fixedAmount: 0, range: [6351, 7350] },
+                { rate: 0.0075, fixedAmount: 2.5, range: [7351, 8850] },
+                { rate: 0.0175, fixedAmount: 13.75, range: [8851, 10100] },
+                { rate: 0.0275, fixedAmount: 35.63, range: [10101, 11250] },
+                { rate: 0.0375, fixedAmount: 67.25, range: [11251, 13550] },
+                { rate: 0.0475, fixedAmount: 153.50, range: [13551, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0, range: [0, 12700] },
+                { rate: 0.0025, fixedAmount: 0, range: [12701, 14700] },
+                { rate: 0.0075, fixedAmount: 5, range: [14701, 17700] },
+                { rate: 0.0175, fixedAmount: 27.5, range: [17701, 20200] },
+                { rate: 0.0275, fixedAmount: 71.25, range: [20201, 22500] },
+                { rate: 0.0375, fixedAmount: 134.5, range: [22501, 27100] },
+                { rate: 0.0475, fixedAmount: 307, range: [27101, null] },
+            ],
+            married_separately: [
+                { rate: 0.0, range: [0, 12700] },
+                { rate: 0.0025, fixedAmount: 0, range: [12701, 14700] },
+                { rate: 0.0075, fixedAmount: 5, range: [14701, 17700] },
+                { rate: 0.0175, fixedAmount: 27.5, range: [17701, 20200] },
+                { rate: 0.0275, fixedAmount: 71.25, range: [20201, 22500] },
+                { rate: 0.0375, fixedAmount: 134.5, range: [22501, 27100] },
+                { rate: 0.0475, fixedAmount: 307, range: [27101, null] },
+            ],
+            head: [
+                { rate: 0.04, range: [0, 6350] },
+                { rate: 0.0025, fixedAmount: 0, range: [6351, 7350] },
+                { rate: 0.0075, fixedAmount: 2.5, range: [7351, 8850] },
+                { rate: 0.0175, fixedAmount: 13.75, range: [8851, 10100] },
+                { rate: 0.0275, fixedAmount: 35.63, range: [10101, 11250] },
+                { rate: 0.0375, fixedAmount: 67.25, range: [11251, 13550] },
+                { rate: 0.0475, fixedAmount: 153.50, range: [13551, null] },
+            ]
+        },
+        "Oregon": {
+            single: [
+                { rate: 0.0475, range: [0, 4300] },
+                { rate: 0.0675, fixedAmount: 204, range: [4301, 10750] },
+                { rate: 0.0875, fixedAmount: 639, range: [10751, 125000] },
+                { rate: 0.099, fixedAmount: 10636, range: [125001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0475, range: [0, 8600] },
+                { rate: 0.0675, fixedAmount: 409, range: [8601, 21500] },
+                { rate: 0.0875, fixedAmount: 1280, range: [21501, 250000] },
+                { rate: 0.099, fixedAmount: 21274, range: [250001, null] },
+            ],
+            married_separately: [
+                { rate: 0.0475, range: [0, 4300] },
+                { rate: 0.0675, fixedAmount: 204, range: [4301, 10750] },
+                { rate: 0.0875, fixedAmount: 639, range: [10751, 125000] },
+                { rate: 0.099, fixedAmount: 10636, range: [125001, null] },
+            ],
+            head: [
+                { rate: 0.0475, range: [0, 8600] },
+                { rate: 0.0675, fixedAmount: 409, range: [8601, 21500] },
+                { rate: 0.0875, fixedAmount: 1280, range: [21501, 250000] },
+                { rate: 0.099, fixedAmount: 21274, range: [250001, null] },
+            ]
+        },
+        Pennsylvania: {
+            single: [
+                { rate: 0.0307, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0307, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.0307, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.0307, range: [0, null] },
+            ],
+        },
+        "Rhode Island": {
+            single: [
+                { rate: 0.0375, range: [0, 77450] },
+                { rate: 0.0475, fixedAmount: 2904.38, range: [77451, 176050] },
+                { rate: 0.0599, fixedAmount: 7587.88, range: [176051, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0375, range: [0, 77450] },
+                { rate: 0.0475, fixedAmount: 2904.38, range: [77451, 176050] },
+                { rate: 0.0599, fixedAmount: 7587.88, range: [176051, null] },
+            ],
+            married_separately: [
+                { rate: 0.0375, range: [0, 77450] },
+                { rate: 0.0475, fixedAmount: 2904.38, range: [77451, 176050] },
+                { rate: 0.0599, fixedAmount: 7587.88, range: [176051, null] },
+            ],
+            head: [
+                { rate: 0.0375, range: [0, 77450] },
+                { rate: 0.0475, fixedAmount: 2904.38, range: [77451, 176050] },
+                { rate: 0.0599, fixedAmount: 7587.88, range: [176051, null] },
+            ]
+        },
+        "South Carolina": {
+            single: [
+                { rate: 0.0, range: [0, 3560] },
+                { rate: 0.03, fixedAmount: -107, range: [3561, 17830] },
+                { rate: 0.062, fixedAmount: -678, range: [17831, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0, range: [0, 3560] },
+                { rate: 0.03, fixedAmount: -107, range: [3561, 17830] },
+                { rate: 0.062, fixedAmount: -678, range: [17831, null] },
+            ],
+            married_separately: [
+                { rate: 0.0, range: [0, 3560] },
+                { rate: 0.03, fixedAmount: -107, range: [3561, 17830] },
+                { rate: 0.062, fixedAmount: -678, range: [17831, null] },
+            ],
+            head: [
+                { rate: 0.0, range: [0, 3560] },
+                { rate: 0.03, fixedAmount: -107, range: [3561, 17830] },
+                { rate: 0.062, fixedAmount: -678, range: [17831, null] },
+            ]
+        },
+        "Sout Dakota": {
+            single: [],
+            married_jointly: [],
+            married_separately: [],
+            head: [],
+        },
+    },
+        Tennessee: {
+            single: [],
+            married_jointly: [],
+            married_separately: [],
+            head: [],
+        },
+        Texas: {
+            single: [],
+            married_jointly: [],
+            married_separately: [],
+            head: [],
+        },
+        Utah: {
+            single: [
+                { rate: 0.0455, range: [0, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0455, range: [0, null] },
+            ],
+            married_separately: [
+                { rate: 0.0455, range: [0, null] },
+            ],
+            head: [
+                { rate: 0.0455, range: [0, null] },
+            ],
+        },
+        Vermont: {
+            single: [
+                { rate: 0.0335, range: [0, 47900] },
+                { rate: 0.0660, fixedAmount: 1605, range: [47901, 75000] },
+                { rate: 0.0660, fixedAmount: 3393, range: [75001, 116000] },
+                { rate: 0.0760, fixedAmount: 6099, range: [116001, 242000] },
+                { rate: 0.0875, fixedAmount: 15675, range: [242001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0335, range: [0, 75000] },
+                { rate: 0.0660, fixedAmount: 2513, range: [75001, 79950] },
+                { rate: 0.0660, fixedAmount: 2678, range: [79951, 193300] },
+                { rate: 0.0760, fixedAmount: 10159, range: [193301, 294600] },
+                { rate: 0.0875, fixedAmount: 17858, range: [294601, null] },
+            ],
+            married_separately: [
+                { rate: 0.0335, range: [0, 39975] },
+                { rate: 0.0660, fixedAmount: 1339, range: [39976, 75000] },
+                { rate: 0.0660, fixedAmount: 3651, range: [75001, 96650] },
+                { rate: 0.0760, fixedAmount: 5080, range: [96651, 147300] },
+                { rate: 0.0875, fixedAmount: 8929 , range: [147301, null] },
+            ],
+            head: [
+                { rate: 0.0335, range: [0, 64200] },
+                { rate: 0.0660, fixedAmount: 2151, range: [64201, 75000] },
+                { rate: 0.0660, fixedAmount: 2864, range: [75001, 165700] },
+                { rate: 0.0760, fixedAmount: 8850, range: [165701, 268300] },
+                { rate: 0.0875, fixedAmount: 16647, range: [268301, null] },
+            ]
+        },
+        Virginia: {
+            single: [
+                { rate: 0.02, range: [0, 3000] },
+                { rate: 0.03, fixedAmount: 60, range: [3001, 5000] },
+                { rate: 0.05, fixedAmount: 120, range: [5001, 17000] },
+                { rate: 0.0575, fixedAmount: 720, range: [17001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.02, range: [0, 3000] },
+                { rate: 0.03, fixedAmount: 60, range: [3001, 5000] },
+                { rate: 0.05, fixedAmount: 120, range: [5001, 17000] },
+                { rate: 0.0575, fixedAmount: 720, range: [17001, null] },
+            ],
+            married_separately: [
+                { rate: 0.02, range: [0, 3000] },
+                { rate: 0.03, fixedAmount: 60, range: [3001, 5000] },
+                { rate: 0.05, fixedAmount: 120, range: [5001, 17000] },
+                { rate: 0.0575, fixedAmount: 720, range: [17001, null] },
+            ],
+            head: [
+                { rate: 0.02, range: [0, 3000] },
+                { rate: 0.03, fixedAmount: 60, range: [3001, 5000] },
+                { rate: 0.05, fixedAmount: 120, range: [5001, 17000] },
+                { rate: 0.0575, fixedAmount: 720, range: [17001, null] },
+            ]
+        },
+        Washington: {
+            single: [],
+            married_jointly: [],
+            married_separately: [],
+            head: [],
+        },
+        "West Virginia": {
+            single: [
+                { rate: 0.0236, range: [0, 10000] },
+                { rate: 0.0315, fixedAmount: 236, range: [10001, 25000] },
+                { rate: 0.0354, fixedAmount: 708.5, range: [25001, 40000] },
+                { rate: 0.0472, fixedAmount: 1239.5, range: [40001, 60000] },
+                { rate: 0.0512, fixedAmount: 2183.5, range: [60001, null] },
+            ],
+            married_jointly: [
+                { rate: 0.0236, range: [0, 10000] },
+                { rate: 0.0315, fixedAmount: 236, range: [10001, 25000] },
+                { rate: 0.0354, fixedAmount: 708.5, range: [25001, 40000] },
+                { rate: 0.0472, fixedAmount: 1239.5, range: [40001, 60000] },
+                { rate: 0.0512, fixedAmount: 2183.5, range: [60001, null] },
+            ],
+            married_separately: [
+                { rate: 0.0236, range: [0, 5000] },
+                { rate: 0.0315, fixedAmount: 118, range: [5001, 12500] },
+                { rate: 0.0354, fixedAmount: 354.25, range: [12501, 20000] },
+                { rate: 0.0472, fixedAmount: 619.75, range: [20001, 30000] },
+                { rate: 0.0512, fixedAmount: 1091.75, range: [30001, null] },
+            ],
+            head: [
+                { rate: 0.0236, range: [0, 10000] },
+                { rate: 0.0315, fixedAmount: 236, range: [10001, 25000] },
+                { rate: 0.0354, fixedAmount: 708.5, range: [25001, 40000] },
+                { rate: 0.0472, fixedAmount: 1239.5, range: [40001, 60000] },
+                { rate: 0.0512, fixedAmount: 2183.5, range: [60001, null] },
+            ]
+        },
+        Wisconsin: {
+            single: [
+                { rate: 0.035, range: [0, 14320] },
+                { rate: 0.044, fixedAmount: 501.2, range: [14321, 28640] },
+                { rate: 0.05, fixedAmount: 1131, range: [28641, 315310] },
+                { rate: 0.0575, fixedAmount: 720, range: [315311, null] },
+            ],
+            married_jointly: [
+                { rate: 0.02, range: [0, 3000] },
+                { rate: 0.03, fixedAmount: 60, range: [3001, 5000] },
+                { rate: 0.05, fixedAmount: 120, range: [5001, 17000] },
+                { rate: 0.0575, fixedAmount: 720, range: [17001, null] },
+            ],
+            married_separately: [
+                { rate: 0.02, range: [0, 3000] },
+                { rate: 0.03, fixedAmount: 60, range: [3001, 5000] },
+                { rate: 0.05, fixedAmount: 120, range: [5001, 17000] },
+                { rate: 0.0575, fixedAmount: 720, range: [17001, null] },
+            ],
+            head: [
+                { rate: 0.02, range: [0, 3000] },
+                { rate: 0.03, fixedAmount: 60, range: [3001, 5000] },
+                { rate: 0.05, fixedAmount: 120, range: [5001, 17000] },
+                { rate: 0.0575, fixedAmount: 720, range: [17001, null] },
+            ]
+        },
+        Wyoming: {
+            single: [],
+            married_jointly: [],
+            married_separately: [],
+            head: [],
+        },
+    }
+        };
+    
+// Populate state options
+const populateStates = () => {
+    const states = Object.keys(taxData.states);
+    [document.getElementById("state1"), document.getElementById("state2")].forEach(select => {
+        states.forEach(state => {
+            const option = document.createElement("option");
+            option.value = state;
+            option.textContent = state;
+            select.appendChild(option);
+        });
+    });
+};
+
+// Format the gross income input
+const formatInput = input => input.value = Number(input.value.replace(/,/g, '')).toLocaleString();
+
+document.getElementById('grossIncome').addEventListener('input', function () {
+    formatInput(this);
+});
+
+// Function to calculate state taxes with % + fixed taxes
+const calculateStateTax = (income, brackets) => {
+    let totalTax = 0;
+
+    for (const bracket of brackets) {
+        if (income > bracket.range[0]) {
+            const taxableIncome = Math.min(income, bracket.range[1] || income) - bracket.range[0];
+            const variableTax = bracket.rate * taxableIncome;
+
+            console.log("Bracket Debug:");
+            console.log(`Range: ${bracket.range}`);
+            console.log(`Fixed Amount: ${bracket.fixedAmount}`);
+            console.log(`Taxable Income: ${taxableIncome}`);
+            console.log(`Variable Tax: ${variableTax}`);
+
+            // Add fixed amount and variable tax for the current bracket
+            totalTax += variableTax + (bracket.fixedAmount || 0);
+
+            // Break once the income falls within the current bracket
+            if (income <= (bracket.range[1] || income)) break;
+        }
+    }
+
+    // Round to fix floating-point issues
+    return Math.round(totalTax * 100) / 100;
+};
+
+// Example usage within the general tax calculation function
+const calculateTax = (income, brackets, state) => {
+    if ((state === "Georgia" || state === "Maine" || state === "Maryland" || state === "New Mexico" || state === "New York" 
+    || state === "North Dakota" || state === "Ohio" || state === "Oklahoma" || state === "Oregon" || state === "Rhode Island"
+    || state === "South Carolina" || state === "Vermont" || state === "Virginia" || state === "West Virginia") && Array.isArray(brackets)) {
+        return calculateStateTax(income, brackets); // Use the generic function
+    }
+
+    let tax = 0;
+    brackets.forEach(({ rate, range }) => {
+        const taxable = Math.min(range[1] || income, income) - range[0];
+        if (taxable > 0) tax += taxable * rate;
+    });
+    return tax;
+};
+
+// Calculate post-tax income
+const calculatePostTaxIncome = (income, state, filingStatus) => {
+    const federalTax = calculateTax(income, taxData.federal[filingStatus], "federal");
+    const stateBrackets = taxData.states[state]?.[filingStatus];
+    const stateTax = calculateTax(income, stateBrackets, state);
+    return { netIncome: income - federalTax - stateTax, federalTax, stateTax };
+};
+
+
+// Format currency for display
+const formatCurrency = value => parseFloat(value).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
+// Handle the "Compare" button click
+document.getElementById('compareButton').addEventListener('click', () => {
+    const grossIncome = parseFloat(document.getElementById('grossIncome').value.replace(/,/g, ''));
+    if (isNaN(grossIncome)) return alert('Enter a valid gross income.');
+
+    const state1 = document.getElementById('state1').value;
+    const filing1 = document.getElementById('filingStatus1').value;
+    const state2 = document.getElementById('state2').value;
+    const filing2 = document.getElementById('filingStatus2').value;
+
+    if (!state1 || !state2) return alert('Select both states.');
+
+    const result1 = calculatePostTaxIncome(grossIncome, state1, filing1);
+    const result2 = calculatePostTaxIncome(grossIncome, state2, filing2);
+
+    // Update State 1 summary
+    document.getElementById('result1').textContent = `Post-Tax Income: ${formatCurrency(result1.netIncome)}`;
+    document.getElementById('federalTaxes1').textContent = `Federal Income Taxes: ${formatCurrency(result1.federalTax)}`;
+    document.getElementById('stateTaxes1').textContent = `State Income Taxes: ${formatCurrency(result1.stateTax)}`;
+    const effectiveTaxRate1 = ((result1.federalTax + result1.stateTax) / grossIncome * 100).toFixed(2);
+    document.getElementById('effectiveTaxRate1').textContent = `Effective Tax Rate: ${effectiveTaxRate1}%`;
+
+    // Update State 2 summary
+    document.getElementById('result2').textContent = `Post-Tax Income: ${formatCurrency(result2.netIncome)}`;
+    document.getElementById('federalTaxes2').textContent = `Federal Income Taxes: ${formatCurrency(result2.federalTax)}`;
+    document.getElementById('stateTaxes2').textContent = `State Income Taxes: ${formatCurrency(result2.stateTax)}`;
+    const effectiveTaxRate2 = ((result2.federalTax + result2.stateTax) / grossIncome * 100).toFixed(2);
+    document.getElementById('effectiveTaxRate2').textContent = `Effective Tax Rate: ${effectiveTaxRate2}%`;
+
+    const summary = document.getElementById('globalSummary');
+
+    if (state1 === state2 && filing1 !== filing2) {
+        // Same state, different filing statuses
+        const higherFilingStatus = result1.netIncome > result2.netIncome ? filing1 : filing2;
+        const incomeDifference = Math.abs(result1.netIncome - result2.netIncome);
+        const monthlyDifference = incomeDifference / 12;
+
+        summary.innerHTML = `
+            <p>In ${state1}, you would have ${formatCurrency(incomeDifference)} more per year if you file as ${filingStatusTitles[higherFilingStatus]}.</p>
+            <p>That means, if you file as ${filingStatusTitles[higherFilingStatus]} in ${state1}, you will have ${formatCurrency(monthlyDifference)} more per month.</p>
+        `;
+    } else {
+        // Different states
+        const higherState = result1.netIncome > result2.netIncome ? state1 : state2;
+        const incomeDifference = Math.abs(result1.netIncome - result2.netIncome);
+        const monthlyDifference = incomeDifference / 12;
+
+        summary.innerHTML = `
+            <p>In ${higherState}, you would have ${formatCurrency(incomeDifference)} more per year.</p>
+            <p>That means, in ${higherState}, you would have ${formatCurrency(monthlyDifference)} more per month.</p>
+        `;
+    }
+
+    summary.style.display = 'block'; // Show the summary after comparison
+});
+
+// Initialize the page
+window.onload = () => {
+    populateStates();
+    document.getElementById('globalSummary').style.display = 'none'; // Hide summary initially
+};
+    </script>
+<div class="legend-box">
+    <h3>Legend</h3>
+    <ul>
+        <li>Post-Tax Income = Total income after federal and state taxes</li>
+        <li>Effective Tax Rate = (Post-Tax Income / Gross Income) × 100</li>
+    </ul>
+</div>
+</body>
+</html>
